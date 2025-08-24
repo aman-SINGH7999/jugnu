@@ -1,4 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
+import { Linkedin } from 'lucide-react';
+import { Github } from 'lucide-react';
+import { Instagram } from 'lucide-react';
+import { Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -6,7 +11,12 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
         {/* Brand */}
         <div>
-          <h2 className="text-xl font-bold text-white">My Virtual School</h2>
+          <div className="mt-5"></div>
+          <div className="flex gap-3">
+            <Image src="/logo.png" alt="logo" width={40} height={40} />
+            <h2 className="text-xl font-bold text-white">My Virtual School</h2>
+          </div>
+          
           <p className="mt-2 text-sm">
             Master your knowledge with our interactive online tests and progress tracking.
           </p>
@@ -27,10 +37,10 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-semibold mb-3">Follow Us</h3>
           <div className="flex gap-4">
-            <Link href="#"><span className="hover:text-blue-400">🌐</span></Link>
-            <Link href="#"><span className="hover:text-blue-400">🐦</span></Link>
-            <Link href="#"><span className="hover:text-blue-400">📘</span></Link>
-            <Link href="#"><span className="hover:text-blue-400">📸</span></Link>
+            <Link href="#"><span className="hover:text-blue-400"><Linkedin /></span></Link>
+            <Link href="#"><span className="hover:text-blue-400"><Github /></span></Link>
+            <Link href="#"><span className="hover:text-blue-400"><Instagram /></span></Link>
+            <Link href="#"><span className="hover:text-blue-400"><Twitter /></span></Link>
           </div>
         </div>
       </div>

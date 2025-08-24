@@ -43,7 +43,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md bg-white/10 backdrop-blur-lg shadow-xl rounded-2xl p-8 text-white">
         {/* Logo + App Name */}
         <div className="flex flex-col items-center mb-6">
-          <Image src="/logo.png" alt="App Logo" width={60} height={60} />
+          <Link href={'/'}><Image src="/logo.png" alt="App Logo" width={60} height={60} /></Link>
           <h1 className="mt-2 text-2xl font-bold tracking-wide">My Virtual School</h1>
           <p className="text-gray-300 text-sm mt-1">Welcome back! Please Register</p>
         </div>

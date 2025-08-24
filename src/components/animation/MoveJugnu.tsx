@@ -36,7 +36,7 @@ export default function MoveJugnu({
       }}
     >
       <Image src="/logo.png" alt="Jugnu" width={size} height={size} />
-      <div className="absolute top-[15px] left-[11px] h-2 w-2 rounded-full bg-amber-200 shadow-[0_0_10px_3px_rgba(251,191,36,0.7)] animate-glow"></div>
+      <div className={`absolute top-[15px] left-[11px] h-1 w-1 rounded-full bg-amber-200 shadow-[0_0_10px_3px_rgba(251,191,36,0.7)] animate-glow`}></div>
 
       <style jsx>{`
         @keyframes moveAround {
