@@ -1,14 +1,20 @@
 "use client";
 
 import Footer from '@/components/layout/Footer';
-import Navbar from '@/components/layout/Navbar'
+import Sidebar from '@/components/layout/Sidebar';
+import { useState } from 'react';
 
 export default function PagesLayout({ children }: { children: React.ReactNode }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   return (
-    <div>
-      <Navbar />
-      <main className="pt-16">{children}</main>
-      <Footer />
+    <div className='overflow-x-hidden flex'>
+      <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+      <main className="w-full">
+        {children}
+        <Footer />
+      </main>
     </div>
   );
 }
+
