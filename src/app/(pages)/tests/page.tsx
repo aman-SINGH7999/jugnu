@@ -1,10 +1,7 @@
 'use client'
 
 import Header from '@/components/tests/Header'
-import RecentActivity from '@/components/tests/RecentActivity'
-import ResourceCard from '@/components/tests/ResourceCard'
 import PracticeTests from '@/components/tests/PracticeTests'
-import Subjects from '@/components/tests/Subjects'
 import TestCard from '@/components/tests/TestCard'
 import { Atom, FileText } from 'lucide-react'
 import React from 'react'

@@ -2,6 +2,7 @@
 import React from 'react';
 import Card from '../ui/Card';
 import { Clock, GraduationCap } from 'lucide-react';
+import Image from 'next/image';
 
 interface TestCardProps {
   title: string;
@@ -42,7 +43,11 @@ const TestCard: React.FC<TestCardProps> = ({
   };
 
   return (
-    <Card className="min-w-80 bg-yellow-50 border border-gray-200 shadow-md hover:shadow-lg transition-all duration-300 group">
+    <Card 
+      className="relative min-w-80 bg-green-50 border border-gray-200 shadow-md 
+      hover:shadow-lg transition-all duration-300 group overflow-hidden 
+     ">
+
       {/* Header with Title & Badge */}
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-lg font-semibold text-gray-800 group-hover:text-blue-700 transition-colors">
