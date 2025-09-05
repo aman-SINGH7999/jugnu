@@ -13,7 +13,7 @@ export default function Footer() {
         <div>
           <div className="mt-5"></div>
           <div className="flex gap-3">
-            <Image src="/logo.png" alt="logo" width={40} height={40} />
+            <Link href={'/'}><Image src="/logo.png" alt="logo" width={40} height={40} /></Link>
             <h2 className="text-xl font-bold text-white">My Virtual School</h2>
           </div>
           

@@ -1,13 +1,17 @@
-// components/Sidebar.tsx
 import { LayoutDashboard, BookOpenCheck, CalendarCheck2, BookCopy, ScrollText, Settings } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 
-const Sidebar = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+interface SidebarProps {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (open: boolean) => void;
+}
+
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const menuItems = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
@@ -18,19 +22,43 @@ const Sidebar = () => {
     { name: 'Settings', icon: Settings, href: '/settings' },
   ];
 
+  // mobile only
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    // Sirf mobile view (<=768px)
+    if (window.innerWidth < 768) {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        isSidebarOpen
+      ) {
+        setIsSidebarOpen(false);
+      }
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [isSidebarOpen, setIsSidebarOpen]);
+
+
   return (
-    <div className={ isSidebarOpen ? 'w-64 flex' : 'w-0 flex'}>
-      {/* Sidebar */}
+    <>
       <aside
-        className={`${
-          isSidebarOpen ? 'w-64' : 'w-0'
-        } h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out overflow-hidden`}
+        ref={sidebarRef}
+        className={`fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col z-50
+        transition-all duration-300 ease-in-out overflow-hidden
+        ${isSidebarOpen ? 'w-64' : 'w-0'}`}
       >
         {/* Logo */}
         <div className="p-6 border-b border-gray-200">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2" onClick={() => setIsSidebarOpen(false)}>
             <Image src="/logo.png" alt="Logo" width={35} height={35} />
-            <span className="text-xl font-bold text-yellow-400 text-shadow-[0_2px_2px_rgba(0,0,0,0.9)] tracking-wider"><span className='text-green-400'>JUG</span>NU</span>
+            <span className="text-xl font-bold text-yellow-400 text-shadow-[0_2px_2px_rgba(0,0,0,0.9)] tracking-wider">
+              <span className="text-green-400">JUG</span>NU
+            </span>
           </Link>
         </div>
 
@@ -40,12 +68,14 @@ const Sidebar = () => {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => {
+                if (window.innerWidth < 768) setIsSidebarOpen(false);
+              }}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm font-medium
                 ${item.href === pathname
                   ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-600'
                   : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
-                }
-              `}
+                }`}
             >
               <item.icon size={20} />
               <span>{item.name}</span>
@@ -68,7 +98,7 @@ const Sidebar = () => {
         </div>
       </aside>
 
-      {/* Toggle Button for Mobile */}
+      {/* Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md border"
@@ -88,9 +118,7 @@ const Sidebar = () => {
           )}
         </svg>
       </button>
-
-      
-    </div>
+    </>
   );
 };
 

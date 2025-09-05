@@ -8,13 +8,18 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className='overflow-x-hidden flex'>
+    <div className="flex overflow-x-hidden">
+      {/* Sidebar */}
       <Sidebar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-      <main className="w-full">
+
+      {/* Main Content */}
+      <main
+        className={`transition-all duration-300 ease-in-out w-full min-h-screen
+        ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}
+      >
         {children}
         <Footer />
       </main>
     </div>
   );
 }
-
