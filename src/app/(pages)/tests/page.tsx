@@ -5,13 +5,10 @@ import PracticeTests from '@/components/tests/PracticeTests'
 import TestCard from '@/components/tests/TestCard'
 import { Atom, FileText } from 'lucide-react'
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function page() {
-
-  const handleStartTest = () => {
-    alert("Test started!");
-  };
-
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -27,7 +24,7 @@ export default function page() {
               endTime="11:00 AM"
               totalDuration={60}
               remainingMinutes={60}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions')}
               actionLabel="Start"
               badgeColor="blue"
             />
@@ -40,7 +37,7 @@ export default function page() {
               endTime="4:00 PM"
               totalDuration={120}
               remainingMinutes={110}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions') }
               actionLabel="Resume"
               badgeColor="purple"
             />
@@ -53,7 +50,7 @@ export default function page() {
               endTime="7:30 PM"
               totalDuration={90}
               remainingMinutes={85}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions')}
               actionLabel="Continue"
               badgeColor="green"
             />
@@ -65,7 +62,7 @@ export default function page() {
               endTime="11:00 AM"
               totalDuration={60}
               remainingMinutes={60}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions')}
               actionLabel="Start"
               badgeColor="blue"
             />
@@ -78,7 +75,7 @@ export default function page() {
               endTime="4:00 PM"
               totalDuration={120}
               remainingMinutes={110}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions')}
               actionLabel="Resume"
               badgeColor="purple"
             />
@@ -91,7 +88,7 @@ export default function page() {
               endTime="7:30 PM"
               totalDuration={90}
               remainingMinutes={85}
-              onActionClick={handleStartTest}
+              onActionClick={()=> router.push('/tests/2/instructions')}
               actionLabel="Continue"
               badgeColor="green"
             />

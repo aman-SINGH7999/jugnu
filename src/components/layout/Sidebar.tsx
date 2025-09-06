@@ -87,7 +87,7 @@ useEffect(() => {
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
             <Image
-              src="/user-con.png"
+              src="/user-icon.jpeg"
               alt="User"
               width={32}
               height={32}
