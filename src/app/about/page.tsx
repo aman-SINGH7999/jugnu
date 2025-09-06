@@ -65,7 +65,7 @@ export default function About() {
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8">
           {team.map((member, i) => (
             <div key={i} className="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-2xl transition-shadow duration-300">
-              <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-4 border-purple-500">
+              <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-1 border-gray-500">
                 <Image src={member.img} alt={member.name} width={128} height={128} className="object-cover" />
               </div>
               <h3 className="text-xl font-semibold">{member.name}</h3>
