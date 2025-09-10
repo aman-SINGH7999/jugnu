@@ -58,7 +58,6 @@ export default function About() {
         </div>
       </div>
 
-
       {/* Team Section */}
       <div className="bg-gray-50 py-16">
         <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Meet Our Team</h2>

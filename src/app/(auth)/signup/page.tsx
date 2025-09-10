@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -9,20 +10,61 @@ import MoveJugnu from "@/components/animation/MoveJugnu";
 import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import { signIn } from "next-auth/react";
 
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ username:"", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log("form submit")
+    console.log(form)
     e.preventDefault();
-    console.log("Login form submitted:", form);
-    // TODO: handle login API
+    setErrorMsg(null);
+
+    // client-side quick validation
+    if (!form.username || !form.email || !form.password) {
+      setErrorMsg("Please fill all fields");
+      return;
+    }
+    if (form.password.length < 6) {
+      setErrorMsg("Password must be at least 6 characters");
+      return;
+    }
+    console.log(form)
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/auth/register", 
+        { name: form.username, email: form.email, password: form.password },
+        {headers: { "Content-Type": "application/json" }}
+      );
+
+      const data = res.data;
+
+      if (data.error) {
+        // show server error message if available
+        setErrorMsg(data?.message || "Registration failed");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/login");
+    } catch (err:any) {
+      console.error("Register request failed:", err);
+      setErrorMsg("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -83,7 +125,7 @@ export default function RegisterPage() {
             </button>
           </div>
           <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-            Register
+            {loading ? "Registering..." : "Register"}
           </Button>
         </form>
 
@@ -96,10 +138,10 @@ export default function RegisterPage() {
 
         {/* Social Login */}
         <div className="flex gap-4">
-          <Button variant="outline" className="w-1/2 flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-100">
+          <Button onClick={() => signIn("google", { callbackUrl: "/dashboard" })} variant="outline" className="w-1/2 flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-100">
             <FcGoogle className="text-xl" /> Google
           </Button>
-          <Button variant="outline" className="w-1/2 flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-100">
+          <Button onClick={() => signIn("facebook", { callbackUrl: "/dashboard" })} variant="outline" className="w-1/2 flex items-center gap-2 bg-white text-gray-700 hover:bg-gray-100">
             <FaFacebook className="text-xl" /> Facebook
           </Button>
         </div>
