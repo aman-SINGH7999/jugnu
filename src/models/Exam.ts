@@ -4,14 +4,13 @@ export interface IExam extends Document {
   title: string;
   description?: string;
 
-  categoryId?: Types.ObjectId | null; // ref -> Category (nullable)
-  subjectIds: Types.ObjectId[];       // ref -> Subject[]
+  categoryId: Types.ObjectId 
 
   duration: number;                   // in minutes
   totalMarks: number;
   createdBy: Types.ObjectId;          // ref -> User
   questionIds: Types.ObjectId[];      // ref -> Question[]
-  negative: boolean;
+  negative: number;
   marksParQue: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -22,10 +21,9 @@ const examSchema = new Schema<IExam>(
     title: { type: String, required: true },
     description: { type: String },
 
-    categoryId: { type: Schema.Types.ObjectId, ref: "Category", default: null },
-    subjectIds: [{ type: Schema.Types.ObjectId, ref: "Subject", required: true }],
+    categoryId: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     marksParQue : {type: Number, default: 4},
-    negative: { type: Boolean, default:true},
+    negative: { type: Number, default:-1},
     duration: { type: Number, required: true },
     totalMarks: { type: Number, required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },

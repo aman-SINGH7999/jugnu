@@ -40,8 +40,6 @@ export async function createAttempt(req: NextRequest) {
       const marksObtained = isCorrect
         ? exam.marksParQue
         : exam.negative
-        ? -1
-        : 0;
 
       totalScore += marksObtained;
 

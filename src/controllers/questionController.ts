@@ -28,12 +28,27 @@ export async function getQuestions(req: NextRequest) {
     await dbConnect();
 
     const subjectId = req.nextUrl.searchParams.get("subjectId");
+    const search = req.nextUrl.searchParams.get("search") || "";
+    const page = parseInt(req.nextUrl.searchParams.get("page") || "1", 10) || 1;
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "10", 10) || 10;
 
-    const query = subjectId ? { subjectId } : {};
+    const query: any = {};
+    if (subjectId) query.subjectId = subjectId;
+    if (search) {
+      // simple text search on `text` field (case-insensitive)
+      // If you store HTML in `text`, regex still works — but be careful with performance for large collections.
+      query.text = { $regex: search, $options: "i" };
+    }
 
-    const questions = await Question.find(query).populate("subjectId");
+    const skip = (page - 1) * limit;
+    const [questions, totalCount] = await Promise.all([
+      Question.find(query).populate("subjectId").sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Question.countDocuments(query),
+    ]);
 
-    return NextResponse.json({ success: true, data: questions }, { status: 200 });
+    const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+
+    return NextResponse.json({ success: true, data: questions, totalPages }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error.message },
