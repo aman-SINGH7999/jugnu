@@ -5,7 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "student" | "teacher" | "admin";
-  img?: string;
+  image?: string;
   expertise?: Types.ObjectId[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -16,7 +16,7 @@ const userSchema = new Schema<IUser>({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "teacher", "admin"], default: "student" },
-  img: { type: String },
+  image: { type: String },
   expertise: [{ type: Schema.Types.ObjectId, ref: "Category"}],
 },{timestamps:true});
 

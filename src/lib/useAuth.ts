@@ -7,7 +7,7 @@ type User = {
   name?: string | null;
   email?: string | null;
   role: string;
-  img?: string;
+  image?: string;
   provider: "nextauth" | "custom";
 } | null;
 
@@ -18,7 +18,7 @@ export function useAuth() {
   const fetchUser = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/me", { cache: "no-store" });
+      const res = await fetch("/api/me", { cache: "no-store", credentials: "include" });
       if (!res.ok) {
         setUser(null);
       } else {

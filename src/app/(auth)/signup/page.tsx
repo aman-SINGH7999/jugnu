@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import { FaFacebook } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { signIn } from "next-auth/react";
+import { useAuth } from "@/lib/useAuth";
 
 
 export default function RegisterPage() {
@@ -21,6 +22,11 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const router = useRouter();
+  const { user } = useAuth()
+  
+    useEffect(()=>{
+      if(user) router.push('/dashboard');
+    })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

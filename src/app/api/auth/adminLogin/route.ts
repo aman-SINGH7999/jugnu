@@ -1,14 +1,17 @@
+// app/api/auth/adminLogin/route.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/utils/auth";
-import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     await dbConnect();
 
-    const { email, password } = await req.json();
+    const body = await req.json();
+    const { email, password } = body || {};
 
     if (!email || !password) {
       return NextResponse.json(
@@ -17,6 +20,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // find user (assuming password is stored hashed)
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return NextResponse.json(
@@ -33,36 +37,45 @@ export async function POST(req: Request) {
       );
     }
 
+    // Only allow admin or teacher
+    if (!["admin", "teacher"].includes(user.role)) {
+      return NextResponse.json(
+        { success: false, message: "Forbidden: only admin/teacher can login here" },
+        { status: 403 }
+      );
+    }
+
+    // sign token (includes id + role) — signToken is async (jose)
     const token = await signToken({ id: user._id.toString(), role: user.role });
 
-    // ✅ Response + cookie set
+    // prepare response and set cookie (httpOnly)
     const res = NextResponse.json(
       {
         success: true,
         message: "Login successful",
         user: {
-          id: user._id,
+          id: user._id.toString(),
           email: user.email,
           role: user.role,
-          token
         },
+        // NOTE: token included in body is optional; cookie is httpOnly.
+        token,
       },
       { status: 200 }
     );
 
     res.cookies.set("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // ✅ local me false hoga
-      sameSite: "lax", // ✅ local testing ke liye
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-
     return res;
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, message: error.message || "Something went wrong" },
+      { success: false, message: error?.message || "Something went wrong" },
       { status: 500 }
     );
   }

@@ -1,10 +1,12 @@
 import { LayoutDashboard, BookOpenCheck, CalendarCheck2, BookCopy, ScrollText, Settings, LogOut, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { signOut } from "next-auth/react";
 import { useAuth } from "@/lib/useAuth";
+import { useLogout } from "@/lib/useLogout";
+
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -15,6 +17,8 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) => {
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { user, loading, refresh } = useAuth();
+  const logout = useLogout();
+  const router = useRouter();
 
 
   const menuItems = [
@@ -47,6 +51,15 @@ useEffect(() => {
   };
 }, [isSidebarOpen, setIsSidebarOpen]);
 
+   const handleLogout = async () => {
+    try {
+    await logout(); // custom logout
+      signOut({ callbackUrl: "/" }); // NextAuth logout
+      router.push("/"); // apna redirect
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
 
   return (
     <>
@@ -88,7 +101,7 @@ useEffect(() => {
 
           {/* Logout Button */}
           <button
-            onClick={()=>signOut({ callbackUrl: "/" }) }
+            onClick={handleLogout }
             className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
           >
             <LogOut size={20} />
@@ -100,7 +113,7 @@ useEffect(() => {
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
             <Image
-              src={user?.img? user.img :"/user-icon.jpeg"}
+              src={user?.image? user.image :"/user-icon.jpeg"}
               alt="User"
               width={32}
               height={32}
