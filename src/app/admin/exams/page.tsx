@@ -228,6 +228,7 @@ export default function ExamsListPage(): JSX.Element {
                 <th className="p-3">Duration</th>
                 <th className="p-3">Questions</th>
                 <th className="p-3">Total Marks</th>
+                <th className="p-3">Scheduled Date</th>
                 <th className="p-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -258,6 +259,9 @@ export default function ExamsListPage(): JSX.Element {
                     <td className="p-3">{ex.duration} min</td>
                     <td className="p-3">{Array.isArray(ex.questionIds) ? ex.questionIds.length : (ex as any).questionCount ?? 0}</td>
                     <td className="p-3">{ex.totalMarks}</td>
+                    <td className="p-3 text-sm text-gray-600">
+                      {ex.scheduledDate ? new Date(ex.scheduledDate).toLocaleString() : "—"} {/* ✅ Render date */}
+                    </td>
                     <td className="p-3">
                       <div className="flex justify-end space-x-3">
                         <button

@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import QuestionPicker from "@/components/admin/QuestionPicker";
 import { Plus } from "lucide-react";
+import { localDatetimeToISOString } from "@/utils/datetime";
 
 interface Category { _id: string; name: string; }
 
 export default function NewExamPage() {
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -22,15 +24,18 @@ export default function NewExamPage() {
     marksParQue: 4,
     negative: 0,
     questionIds: [] as string[],
+    scheduledDate: "", 
   });
 
   useEffect(() => {
     (async () => {
       try {
         const catRes = await axios.get("/api/categories", { withCredentials: true });
+        const res = await axios.get("/api/users", { withCredentials: true });
         if (catRes.data?.success) setCategories(catRes.data.data || []);
+        if (res.data?.success) setUsers(res.data.data || []);
       } catch (err) {
-        console.error("fetch categories:", err);
+        console.error("fetch categories and users:", err);
       }
     })();
   }, []);
@@ -58,7 +63,7 @@ export default function NewExamPage() {
           marksParQue: Number(form.marksParQue),
           negative: Number(form.negative),
           questionIds: form.questionIds,
-          // ❌ createdBy removed (handled by backend middleware automatically)
+          scheduledDate: form.scheduledDate ? localDatetimeToISOString(form.scheduledDate) : null,
         },
         { withCredentials: true }
       );
@@ -142,19 +147,32 @@ export default function NewExamPage() {
             </select>
           </div>
 
-          {/* Negative Marks */}
-          <select
-            value={form.negative}
-            onChange={(e) => setForm({ ...form, negative: Number(e.target.value) })}
-            className="border px-3 py-2 rounded-lg"
-          >
-            <option value="">Negative Marks</option>
-            {[-0.25, -0.5, -1, -2, -3].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
+          <div className="md:flex justify-between">
+            {/* Negative Marks */}
+            <select
+              value={form.negative}
+              onChange={(e) => setForm({ ...form, negative: Number(e.target.value) })}
+              className="border px-3 py-2 rounded-lg"
+            >
+              <option value="">Negative Marks</option>
+              {[-0.25, -0.5, -1, -2, -3].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            
+            {/* scheduled Date */}
+            <div className="md:flex items-center gap-2">
+              <label className="block font-medium text-nowrap">Scheduled Date & Time</label>
+              <input
+                type="datetime-local"
+                value={form.scheduledDate}
+                onChange={(e) => setForm({ ...form, scheduledDate: e.target.value })}
+                className="border px-3 py-2 rounded-lg w-full"
+              />
+            </div>
+          </div>
 
           {/* Question picker */}
           <div>
@@ -164,6 +182,7 @@ export default function NewExamPage() {
               onChange={onQuestionsChange}
               pageSize={10}
               subjects={categories.find((c) => c._id === form.categoryId)?.subjects || []}
+              users={users}
             />
           </div>
 

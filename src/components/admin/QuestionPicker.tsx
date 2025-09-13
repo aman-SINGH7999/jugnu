@@ -1,4 +1,3 @@
-// QuestionPicker.tsx (replace your component with this)
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -7,13 +6,15 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 
 export interface PickedQuestion { _id: string; text: string; }
 interface Subject { _id: string; name: string; }
+interface User { _id: string; name?: string; email: string; }
 
 interface Props {
-  value?: string[];
+  value?: any[]; // can be string[] or object[] — we'll normalize
   onChange?: (ids: string[]) => void;
   pageSize?: number;
   placeholder?: string;
-  subjects: Subject[]; // parent passes subjects (may be empty)
+  subjects?: Subject[];
+  users?: User[];
 }
 
 export default function QuestionPicker({
@@ -22,60 +23,59 @@ export default function QuestionPicker({
   pageSize = 10,
   placeholder = "Search questions...",
   subjects = [],
+  users = [],
 }: Props) {
-  const [selected, setSelected] = useState<string[]>(value || []);
+  // helper to normalize any id-like value to string
+  const toId = (v: any) => {
+    if (!v) return "";
+    if (typeof v === "string") return v;
+    if (typeof v === "object") {
+      if ("_id" in v && v._id != null) return String(v._id);
+      if ("id" in v && v.id != null) return String(v.id);
+    }
+    return String(v);
+  };
+
+  const [selected, setSelected] = useState<string[]>(
+    (value || []).map(toId).filter(Boolean)
+  );
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [results, setResults] = useState<PickedQuestion[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // default subject -> pick first subject automatically when subjects prop changes
-  const [activeSubject, setActiveSubject] = useState<string>("");
+  // filters
+  const [subjectId, setSubjectId] = useState<string>("");
+  const [createdBy, setCreatedBy] = useState<string>("");
 
+  // keep local selected in sync when parent value changes (normalize)
   useEffect(() => {
-    setSelected(value || []);
+    setSelected((value || []).map(toId).filter(Boolean));
   }, [value]);
 
-  // when subjects prop changes, default to first subject (if any)
   useEffect(() => {
-    if (subjects.length > 0 && !subjects.find(s => s._id === activeSubject)) {
-      setActiveSubject(subjects[0]._id);
-      setPage(1);
-    }
-    if (subjects.length === 0) {
-      setActiveSubject("");
-    }
+    fetchQuestions({ page, search, subjectId, createdBy });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subjects]);
+  }, [page, subjectId, createdBy]);
 
-  useEffect(() => {
-    // always allow fetching even if no subject; subjectId is optional
-    fetchQuestions({ page, search, subjectId: activeSubject || undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
-
-  // when switching subject, fetch page 1
-  useEffect(() => {
-    setPage(1);
-    fetchQuestions({ page: 1, search, subjectId: activeSubject || undefined });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSubject]);
-
-  const fetchQuestions = async (opts?: { page?: number; search?: string; subjectId?: string }) => {
+  const fetchQuestions = async (opts?: { page?: number; search?: string; subjectId?: string; createdBy?: string }) => {
     try {
       setLoading(true);
       const p = opts?.page ?? page;
       const q = opts?.search ?? search;
-      const s = opts?.subjectId;
+      const s = opts?.subjectId ?? subjectId;
+      const u = opts?.createdBy ?? createdBy;
 
       const { data } = await axios.get("/api/questions", {
-        params: { page: p, limit: pageSize, search: q, subjectId: s },
+        params: { page: p, limit: pageSize, search: q, subjectId: s || undefined, createdBy: u || undefined },
         withCredentials: true,
       });
 
       if (data?.success) {
-        setResults(data.data || []);
+        // normalize returned _id to string so comparison is consistent
+        const items = (data.data || []).map((it: any) => ({ ...it, _id: String(it._id) }));
+        setResults(items);
         setTotalPages(data.totalPages || 1);
       } else {
         setResults([]);
@@ -92,7 +92,7 @@ export default function QuestionPicker({
 
   const onSearch = () => {
     setPage(1);
-    fetchQuestions({ page: 1, search, subjectId: activeSubject || undefined });
+    fetchQuestions({ page: 1, search, subjectId, createdBy });
   };
 
   const toggle = (id: string, checked: boolean) => {
@@ -101,41 +101,39 @@ export default function QuestionPicker({
     onChange?.(next);
   };
 
-  const selectAllPage = () => {
-    const ids = results.map((r) => r._id);
-    const next = Array.from(new Set([...selected, ...ids]));
-    setSelected(next);
-    onChange?.(next);
-  };
-  const clearAllPage = () => {
-    const ids = results.map((r) => r._id);
-    const next = selected.filter((s) => !ids.includes(s));
-    setSelected(next);
-    onChange?.(next);
-  };
-
   return (
-    <div>
-      {/* Subject Tabs (if any) */}
-      {subjects.length > 0 ? (
-        <div className="flex gap-2 mb-3 flex-wrap">
+    <div className="space-y-3">
+      {/* Filters row */}
+      <div className="flex flex-col md:flex-row gap-2">
+        {/* Subject Filter */}
+        <select
+          value={subjectId}
+          onChange={(e) => { setSubjectId(e.target.value); setPage(1); }}
+          className="border px-3 py-2 rounded-lg flex-1"
+        >
+          <option value="">All Subjects</option>
           {subjects.map((s) => (
-            <button
-              key={s._id}
-              onClick={() => { setActiveSubject(s._id); setPage(1); }}
-              className={`px-3 py-1 rounded-lg border text-sm ${
-                activeSubject === s._id ? "bg-blue-600 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {s.name}
-            </button>
+            <option key={s._id} value={s._id}>{s.name}</option>
           ))}
-        </div>
-      ) : (
-        <div className="mb-3 text-sm text-gray-500">No subjects in selected category — showing all questions</div>
-      )}
+        </select>
 
-      <div className="flex gap-2 items-center mb-2">
+        {/* User Filter */}
+        <select
+          value={createdBy}
+          onChange={(e) => { setCreatedBy(e.target.value); setPage(1); }}
+          className="border px-3 py-2 rounded-lg flex-1"
+        >
+          <option value="">All Users</option>
+          {users.map((u) => (
+            <option key={u._id} value={u._id}>
+              {u.name || u.email}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Search bar */}
+      <div className="flex gap-2 items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 text-gray-400" size={16} />
           <input
@@ -158,37 +156,36 @@ export default function QuestionPicker({
 
       {/* Results */}
       <div className="border rounded overflow-hidden">
-        <div className="p-2 border-b flex items-center justify-between bg-gray-50">
-          <div className="text-sm">Results</div>
-          <div className="flex items-center gap-2">
-            <button onClick={selectAllPage} className="px-2 py-1 text-xs border rounded">Select page</button>
-            <button onClick={clearAllPage} className="px-2 py-1 text-xs border rounded">Clear page</button>
-          </div>
-        </div>
-
-        <div className="max-h-56 overflow-y-auto p-2">
-          {loading ? (
-            <div className="text-center text-gray-500 py-6">Loading...</div>
-          ) : results.length === 0 ? (
-            <div className="text-center text-gray-500 py-6">No questions</div>
-          ) : (
-            results.map((r) => {
-              const checked = selected.includes(r._id);
+        {loading ? (
+          <div className="text-center text-gray-500 py-6">Loading...</div>
+        ) : results.length === 0 ? (
+          <div className="text-center text-gray-500 py-6">No questions</div>
+        ) : (
+          <div className="max-h-56 overflow-y-auto p-2">
+            {results.map((r) => {
+              const rid = String(r._id);
+              const checked = selected.includes(rid);
               return (
-                <label key={r._id} className="flex gap-2 items-start p-2 hover:bg-gray-50 rounded">
-                  <input type="checkbox" checked={checked} onChange={(e) => toggle(r._id, e.target.checked)} className="mt-1" />
+                <label key={rid} className="flex gap-2 items-start p-2 hover:bg-gray-50 rounded">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => toggle(rid, e.target.checked)}
+                    className="mt-1"
+                  />
                   <div className="text-sm break-words" dangerouslySetInnerHTML={{ __html: r.text }} />
                 </label>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
 
+        {/* Pagination */}
         <div className="p-2 flex items-center justify-between border-t bg-white">
           <div className="text-sm text-gray-600">Page {page} / {totalPages}</div>
           <div className="flex items-center gap-2">
-            <button onClick={() => { if (page > 1) setPage((p) => p - 1); }} disabled={page <= 1} className="p-1 border rounded"><ChevronLeft size={16} /></button>
-            <button onClick={() => { if (page < totalPages) setPage((p) => p + 1); }} disabled={page >= totalPages} className="p-1 border rounded"><ChevronRight size={16} /></button>
+            <button onClick={() => page > 1 && setPage((p) => p - 1)} disabled={page <= 1} className="p-1 border rounded"><ChevronLeft size={16} /></button>
+            <button onClick={() => page < totalPages && setPage((p) => p + 1)} disabled={page >= totalPages} className="p-1 border rounded"><ChevronRight size={16} /></button>
           </div>
         </div>
       </div>

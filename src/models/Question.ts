@@ -9,6 +9,7 @@ export interface IQuestion extends Document {
     isCorrect: boolean;
   }[];
   explanation?: string;
+  createdBy: Types.ObjectId,
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,6 +26,7 @@ const questionSchema = new Schema<IQuestion>(
       },
     ],
     explanation: { type: String },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

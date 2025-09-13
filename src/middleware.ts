@@ -71,8 +71,13 @@ export async function middleware(req: NextRequest) {
   console.log("middleware user:", user);
 
   if (!user) {
+  if (pathname.startsWith("/api")) {
     return new NextResponse(JSON.stringify({ message: "Unauthorized" }), { status: 401 });
+  } else {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
+}
+
 
   // 3) Role-based access check
   for (const route in protectedRoutes) {

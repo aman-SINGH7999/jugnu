@@ -12,6 +12,7 @@ export interface IExam extends Document {
   questionIds: Types.ObjectId[];      // ref -> Question[]
   negative: number;
   marksParQue: number;
+  scheduledDate?: Date; 
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,7 +29,7 @@ const examSchema = new Schema<IExam>(
     totalMarks: { type: Number, required: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     questionIds: [{ type: Schema.Types.ObjectId, ref: "Question" }],
-    
+    scheduledDate: { type: Date }, 
   },
   { timestamps: true }
 );
