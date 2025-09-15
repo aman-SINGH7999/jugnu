@@ -1,9 +1,9 @@
 // server/controllers/examController.ts
 import { NextRequest, NextResponse } from "next/server";
-import Exam from "@/models/Exam";
-import Question from "@/models/Question";
 import { dbConnect } from "@/lib/dbConnect";
 import { getRequestUser } from "@/lib/getRequestUser";
+import { Question, Exam } from "@/models";
+
 
 export async function createExam(req: NextRequest) {
   try {
@@ -140,12 +140,12 @@ export async function getExams(req: NextRequest) {
 // ✅ Get Exam by ID
 export async function getExamById(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
-
-    const exam = await Exam.findById(params.id)
+    const { id } = await context.params;
+    const exam = await Exam.findById(id)
       .populate("categoryId")
       .populate("createdBy", "name email")
       .populate("questionIds");
@@ -287,12 +287,12 @@ export async function updateExam(req: NextRequest, { params }: { params: any }) 
 // ✅ Delete Exam
 export async function deleteExam(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
-
-    const deletedExam = await Exam.findByIdAndDelete(params.id);
+    const { id } = await context.params;
+    const deletedExam = await Exam.findByIdAndDelete(id);
 
     if (!deletedExam) {
       return NextResponse.json(

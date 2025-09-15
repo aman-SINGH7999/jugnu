@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Category from "@/models/Category";
+import { Category } from "@/models";
 import { dbConnect } from "@/lib/dbConnect";
 
 // ✅ Create Category

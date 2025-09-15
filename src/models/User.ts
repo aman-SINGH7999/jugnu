@@ -6,7 +6,6 @@ export interface IUser extends Document {
   password: string;
   role: "student" | "teacher" | "admin";
   image?: string;
-  expertise?: Types.ObjectId[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -17,7 +16,6 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "teacher", "admin"], default: "student" },
   image: { type: String },
-  expertise: [{ type: Schema.Types.ObjectId, ref: "Category"}],
 },{timestamps:true});
 
 export default (mongoose.models.User as Model<IUser>) ||

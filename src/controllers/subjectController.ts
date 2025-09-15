@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import Subject from "@/models/Subject";
+import { Subject } from "@/models";
 import { dbConnect } from "@/lib/dbConnect";
 
 // ✅ Create Subject

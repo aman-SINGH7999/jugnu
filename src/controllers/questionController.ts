@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import Question from "@/models/Question";
 import { dbConnect } from "@/lib/dbConnect";
 import { getRequestUser } from "@/lib/getRequestUser";
+import { Question } from "@/models";
+
 
 
 // ✅ Create a new Question

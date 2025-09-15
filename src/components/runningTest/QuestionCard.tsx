@@ -1,54 +1,52 @@
 'use client';
 import Image from "next/image";
 
-export default function QuestionCard({ question, selected, onSelect }: any) {
+export default function QuestionCard({ question, selected = [], onSelect }: any) {
+  if (!question) return <div className="p-6">No question</div>;
+
+  const opts = question.options || [];
+
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
-      {/* Question Statement */}
+    <div className="bg-white shadow-md rounded-xl p-6 space-y-6">
       <div className="prose prose-blue max-w-none">
         {question.text ? (
-  <div
-    className="prose"
-    dangerouslySetInnerHTML={{ __html: question.text }}
-  />
-) : (
-  <p>No content</p>
-)}
+          <div dangerouslySetInnerHTML={{ __html: question.text }} />
+        ) : <p>No content</p>}
 
-        {/* Agar image diya gaya hai */}
         {question.image && (
           <div className="mt-4">
             <Image
               src={question.image}
               alt="Question Illustration"
-              width={500}
-              height={300}
-              className="rounded-lg border shadow-sm"
+              width={400}
+              height={250}
+              className="rounded-lg shadow-sm"
             />
           </div>
         )}
       </div>
 
-      {/* Options */}
       <div className="space-y-3">
-        {question.options.map((opt: any, i: number) => (
-          <button
-            key={i}
-            onClick={() => onSelect(opt)}
-            className={`block w-full text-left px-4 py-3 rounded-lg border transition ${
-              selected === opt
-                ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-            }`}
-          >
-            {/* Option me bhi HTML/Markdown ho sakta hai */}
-            {typeof opt === "string" ? (
-              opt
-            ) : (
-              <span dangerouslySetInnerHTML={{ __html: opt }} />
-            )}
-          </button>
-        ))}
+        {opts.map((opt: any, i: number) => {
+          const isSelected = Array.isArray(selected) && selected.includes(i);
+          const content = typeof opt === "string" ? opt : (opt.optionText ?? "");
+          return (
+            <div
+              key={i}
+              onClick={() => onSelect(i)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-lg cursor-pointer transition shadow-sm
+                ${isSelected ? "bg-blue-100 shadow-inner" : "hover:bg-gray-100"}`}
+            >
+              <div
+                className={`w-5 h-5 rounded-md flex-shrink-0 border-2 
+                  ${isSelected ? "border-blue-600 bg-blue-600" : "border-gray-300 bg-white"}`}
+              />
+              <div className="flex-1">
+                <span dangerouslySetInnerHTML={{ __html: String(content) }} />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

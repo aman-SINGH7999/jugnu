@@ -17,7 +17,7 @@ interface Question {
 }
 
 export default function UserResultPage({ params }: { params: { resultId: string } }) {
-  const [isLogin, setIsLogin] = useState(false); // 👈 toggle this for global/user view
+  const [isLogin, setIsLogin] = useState(true); // 👈 toggle this for global/user view
   const [questions, setQuestions] = useState<Question[]>([]);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);

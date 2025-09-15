@@ -1,3 +1,5 @@
+
+// category/[id]/route.ts
 import {
   getCategoryById,
   updateCategory,

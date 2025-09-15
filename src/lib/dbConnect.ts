@@ -1,4 +1,12 @@
+
+// lib/dbConnect.ts ya kisi bhi central model loader me
+import "@/models/Subject";
+import "@/models/Category";
+import "@/models/User";
+import "@/models/Question";
+
 import mongoose from "mongoose";
+
 
 let isConnected = false;
 

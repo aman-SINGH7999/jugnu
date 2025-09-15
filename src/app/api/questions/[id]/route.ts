@@ -1,3 +1,5 @@
+//questions/[id]/route.ts
+
 import {
   getQuestionById,
   updateQuestion,

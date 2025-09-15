@@ -1,3 +1,4 @@
+//questions/route.ts
 import { createQuestion, getQuestions } from "@/controllers/questionController";
 
 export async function GET(req: Request) {

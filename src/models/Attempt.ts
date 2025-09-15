@@ -12,8 +12,8 @@ export interface IAttempt extends Document {
   examId: Types.ObjectId;       // ref -> Exam
   answers: IAnswer[];
   totalScore: number;
-  startedAt: Date;
-  submittedAt: Date;
+  // startedAt: Date;
+  // submittedAt: Date;
 }
 
 const answerSchema = new Schema<IAnswer>(
@@ -32,8 +32,8 @@ const attemptSchema = new Schema<IAttempt>(
     examId: { type: Schema.Types.ObjectId, ref: "Exam", required: true },
     answers: { type: [answerSchema], default: [] },
     totalScore: { type: Number, default: 0 },
-    startedAt: { type: Date, required: true },
-    submittedAt: { type: Date },
+    // startedAt: { type: Date, required: true },
+    // submittedAt: { type: Date },
   },
   { timestamps: true }
 );
