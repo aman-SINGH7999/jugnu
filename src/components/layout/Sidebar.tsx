@@ -25,6 +25,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) => {
     { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
     { name: 'Tests', icon: BookOpenCheck, href: '/tests' },
     { name: 'Schedule', icon: CalendarCheck2, href: '/schedule' },
+    { name: 'Practice', icon: CalendarCheck2, href: '/practice' },
     { name: 'Subjects', icon: BookCopy, href: '/subjects' },
     { name: 'Results', icon: ScrollText, href: '/results' },
     { name: 'Settings', icon: Settings, href: '/settings' },

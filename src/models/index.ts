@@ -7,6 +7,7 @@ import "@/models/Question";
 import "@/models/Exam";
 import "@/models/Attempt"
 import "@/models/UserAchievement"
+import "@/models/Result"
 
 // Force register all models
 export const User = mongoose.models.User;
@@ -16,3 +17,4 @@ export const Question = mongoose.models.Question;
 export const Exam = mongoose.models.Exam;
 export const Attempt = mongoose.models.Attempt;
 export const UserAchievement = mongoose.models.UserAchievement;
+export const Result = mongoose.models.Result;

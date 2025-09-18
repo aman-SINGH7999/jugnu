@@ -1,30 +1,41 @@
 import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface IAnswer {
-  questionId: Types.ObjectId;   // ref -> Question
-  selectedOptions: number[];    // selected option indexes
+  questionId: Types.ObjectId;
+  selectedOptions: number[];
   isCorrect: boolean;
-  marksObtained: number;
 }
 
-export interface IAttempt extends Document {
-  studentId: Types.ObjectId;    // ref -> User (student)
-  examId: Types.ObjectId;       // ref -> Exam
-  answers: IAnswer[];
-  totalScore: number;
-  // startedAt: Date;
-  // submittedAt: Date;
+export interface ISubjectScore {
+  subjectId: Types.ObjectId;
+  marks: number;
 }
+
+const subjectScoreSchema = new Schema<ISubjectScore>(
+  {
+    subjectId: { type: Schema.Types.ObjectId, ref: "Subject", required: true },
+    marks: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
 
 const answerSchema = new Schema<IAnswer>(
   {
     questionId: { type: Schema.Types.ObjectId, ref: "Question", required: true },
     selectedOptions: [{ type: Number, required: true }],
     isCorrect: { type: Boolean, required: true },
-    marksObtained: { type: Number, required: true },
   },
   { _id: false }
 );
+
+export interface IAttempt extends Document {
+  studentId: Types.ObjectId;
+  examId: Types.ObjectId;
+  answers: IAnswer[];
+  totalScore: number;
+  subjectsScore: ISubjectScore[];
+  submittedAt: Date;
+}
 
 const attemptSchema = new Schema<IAttempt>(
   {
@@ -32,8 +43,8 @@ const attemptSchema = new Schema<IAttempt>(
     examId: { type: Schema.Types.ObjectId, ref: "Exam", required: true },
     answers: { type: [answerSchema], default: [] },
     totalScore: { type: Number, default: 0 },
-    // startedAt: { type: Date, required: true },
-    // submittedAt: { type: Date },
+    subjectsScore: { type: [subjectScoreSchema], default: [] },
+    submittedAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

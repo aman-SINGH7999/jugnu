@@ -88,7 +88,7 @@ export async function createExam(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: newExam }, { status: 201 });
   } catch (error: any) {
-    console.error("createExam error:", error);
+    // console.error("createExam error:", error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
@@ -176,7 +176,7 @@ export async function updateExam(req: NextRequest, { params }: { params: any }) 
     const body = await req.json();
     const user = getRequestUser(req);
 
-    console.log("updateExam: received body =>", body);
+    // console.log("updateExam: received body =>", body);
 
     if (!user) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
@@ -232,7 +232,7 @@ export async function updateExam(req: NextRequest, { params }: { params: any }) 
     // scheduledDate 
     if (Object.prototype.hasOwnProperty.call(body, "scheduledDate")) {
       const raw = body.scheduledDate;
-      console.log("updateExam: raw scheduledDate =>", raw, " typeof:", typeof raw);
+      // console.log("updateExam: raw scheduledDate =>", raw, " typeof:", typeof raw);
 
       if (raw === null || raw === "" || raw === undefined) {
         exam.scheduledDate = null;
@@ -272,7 +272,7 @@ export async function updateExam(req: NextRequest, { params }: { params: any }) 
 
     // Fetch fresh copy from DB to be 100% sure what's stored
     const fresh = await Exam.findById(id).lean();
-    console.log("updateExam: saved fresh =>", fresh);
+    // console.log("updateExam: saved fresh =>", fresh);
 
     return NextResponse.json({ success: true, data: fresh }, { status: 200 });
   } catch (error: any) {

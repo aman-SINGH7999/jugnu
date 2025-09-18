@@ -1,10 +1,14 @@
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
-import { Question, Exam, Attempt, UserAchievement } from "@/models";
+import { Question, Exam, Attempt, Result, UserAchievement } from "@/models";
+import { getRequestUser } from "@/lib/getRequestUser";
 
 
 export async function getUpcomingSoonExams(req: NextRequest) {
+  const user = getRequestUser(req);
+  const userId = user?.id;
+
   try {
     await dbConnect();
 
@@ -12,7 +16,7 @@ export async function getUpcomingSoonExams(req: NextRequest) {
 
     // today 04:00 AM
     const today = new Date();
-    today.setHours(4, 0, 0, 0); // fix lower bound
+    today.setHours(4, 0, 0, 0);
 
     // 3 days later (till end of day)
     const threeDaysLater = new Date(today);
@@ -25,16 +29,35 @@ export async function getUpcomingSoonExams(req: NextRequest) {
 
     if (categoryId) query.categoryId = categoryId;
 
+    // exams list
     const exams = await Exam.find(query)
       .populate("categoryId", "name")
       .select("-__v")
-      .sort({ scheduledDate: 1 });
+      .sort({ scheduledDate: 1 })
+      .lean();
+
+    // ✅ check user attempts
+    if (userId) {
+      const attempts = await Attempt.find({ studentId: userId })
+        .select("examId")
+        .lean();
+
+      const attemptedExamIds = new Set(attempts.map((a) => String(a.examId)));
+
+      exams.forEach((exam: any) => {
+        exam.attempted = attemptedExamIds.has(String(exam._id));
+      });
+    }
 
     return NextResponse.json({ success: true, data: exams }, { status: 200 });
   } catch (error: any) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
   }
 }
+
 
 
 
@@ -148,8 +171,14 @@ export async function getSafeExamById(req: Request | any, context: any) {
 
 
 
-// 🔹 SUBMIT EXAM
-export async function submitExam(req: Request | any) {
+
+/**
+ * SUBMIT EXAM
+ * - Save Attempt (with percentage scores)
+ * - Update UserAchievement (with percentage scores)
+ * - Ensure Result exists
+ */
+export async function submitExam(req: Request | NextRequest | any) {
   try {
     await dbConnect();
 
@@ -157,66 +186,80 @@ export async function submitExam(req: Request | any) {
     const { examId, userId, answers } = body ?? {};
 
     if (!examId || !userId || !answers) {
-      return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "Missing fields (examId, userId, answers)" },
+        { status: 400 }
+      );
     }
 
-    if (!mongoose.Types.ObjectId.isValid(examId) || !mongoose.Types.ObjectId.isValid(userId)) {
-      return NextResponse.json({ success: false, message: "Invalid examId or userId" }, { status: 400 });
+    if (
+      !mongoose.Types.ObjectId.isValid(examId) ||
+      !mongoose.Types.ObjectId.isValid(userId)
+    ) {
+      return NextResponse.json(
+        { success: false, message: "Invalid examId or userId" },
+        { status: 400 }
+      );
     }
 
-    // Load exam and its questions
+    // ✅ Fetch exam with questions
     const exam = await Exam.findById(examId)
-      .populate({
-        path: "questionIds",
-        select: "options text _id",
-      })
-      .populate("categoryId")
+      .populate({ path: "questionIds", select: "options text _id subjectId" })
       .lean();
 
-    if (!exam) {
-      return NextResponse.json({ success: false, message: "Exam not found" }, { status: 404 });
-    }
+    if (!exam)
+      return NextResponse.json(
+        { success: false, message: "Exam not found" },
+        { status: 404 }
+      );
 
-    // Normalize populated questions so each option has { optionText, isCorrect }
+    // ✅ Normalize questions
     const questions = (exam.questionIds || []).map((q: any) => {
-      const opts = (q.options || []).map((o: any) => {
-        if (typeof o === "string") {
-          // If your schema stores only strings you can't determine isCorrect here.
-          // In that case, ensure your schema stores isCorrect on options as objects.
-          return { optionText: o, isCorrect: false };
-        }
-        return {
-          optionText: o.optionText ?? o.text ?? "",
-          isCorrect: !!o.isCorrect,
-        };
-      });
+      const opts = (q.options || []).map((o: any) =>
+        typeof o === "string"
+          ? { optionText: o, isCorrect: false }
+          : {
+              optionText: o.optionText ?? o.text ?? "",
+              isCorrect: !!o.isCorrect,
+            }
+      );
       return { ...q, options: opts };
     });
 
+    const marksPerQue =
+      typeof exam.marksParQue === "number" ? exam.marksParQue : 1;
+    const negativePenalty =
+      typeof exam.negative === "number" ? -Math.abs(exam.negative) : 0;
+
     let totalScore = 0;
+    const perSubjectScores: Record<string, number> = {};
+    const subjectQuestionCount: Record<string, number> = {};
     const attemptAnswers: any[] = [];
 
-    const marksPerQue = typeof exam.marksParQue === "number" ? exam.marksParQue : 1;
-    const negativePenalty = typeof exam.negative === "number" ? -Math.abs(exam.negative) : 0;
-
+    // ✅ Evaluate answers
     for (const q of questions) {
       const qid = String(q._id);
       let userAns = answers[qid] ?? [];
-
       if (!Array.isArray(userAns)) userAns = [userAns];
 
-      // Normalize indexes: accept numbers or numeric strings; fallback to try find by text (rare)
-      const normalizedIndexes = Array.from(new Set(
-        userAns.map((a: any) => {
-          if (typeof a === "number") return a;
-          if (typeof a === "string" && /^\d+$/.test(a)) return Number(a);
-          const idx = (q.options || []).findIndex((opt: any) => (opt?.optionText ?? "") === String(a));
-          return idx;
-        })
-      )).filter((n: any) => Number.isInteger(n) && n >= 0 && n < (q.options || []).length);
+      const normalizedIndexes = Array.from(
+        new Set(
+          (userAns as any[]).map((a: any) => {
+            if (typeof a === "number") return a;
+            if (typeof a === "string" && /^\d+$/.test(a)) return Number(a);
+            const idx = (q.options || []).findIndex(
+              (opt: any) => (opt?.optionText ?? "") === String(a)
+            );
+            return idx;
+          })
+        )
+      ).filter(
+        (n: any) =>
+          Number.isInteger(n) && n >= 0 && n < (q.options || []).length
+      );
 
       const correctIndexes = (q.options || [])
-        .map((opt: any, idx: number) => (opt && opt.isCorrect ? idx : -1))
+        .map((opt: any, idx: number) => (opt?.isCorrect ? idx : -1))
         .filter((i: number) => i !== -1);
 
       const isCorrect =
@@ -226,7 +269,6 @@ export async function submitExam(req: Request | any) {
       let marksObtained = 0;
       if (isCorrect) marksObtained = marksPerQue;
       else if (normalizedIndexes.length > 0) marksObtained = negativePenalty;
-      else marksObtained = 0;
 
       totalScore += marksObtained;
 
@@ -234,43 +276,105 @@ export async function submitExam(req: Request | any) {
         questionId: q._id,
         selectedOptions: normalizedIndexes,
         isCorrect,
-        marksObtained,
       });
+
+      // ✅ Subject wise aggregation
+      const subjId = q.subjectId
+        ? String(q.subjectId._id ?? q.subjectId)
+        : null;
+      if (subjId) {
+        perSubjectScores[subjId] = (perSubjectScores[subjId] || 0) + marksObtained;
+        subjectQuestionCount[subjId] = (subjectQuestionCount[subjId] || 0) + 1;
+      }
     }
 
-    if (!Number.isFinite(totalScore)) totalScore = 0;
-    totalScore = Math.round((totalScore + Number.EPSILON) * 100) / 100;
+    // ✅ Calculate percentages
+    const totalPossibleMarks = (questions.length || 0) * marksPerQue;
+    const totalPercent =
+      totalPossibleMarks > 0 ? (totalScore / totalPossibleMarks) * 100 : 0;
 
-    const attempt = await Attempt.create({
-      studentId: userId,
-      examId,
+    const attemptSubjectsScore = Object.entries(perSubjectScores).map(
+      ([subjId, marks]) => {
+        const maxMarks = (subjectQuestionCount[subjId] || 0) * marksPerQue;
+        const percent = maxMarks > 0 ? (marks / maxMarks) * 100 : 0;
+        return {
+          subjectId: new mongoose.Types.ObjectId(subjId),
+          marks: Math.round((percent + Number.EPSILON) * 100) / 100,
+        };
+      }
+    );
+
+    // ✅ Save Attempt with % scores
+    const savedAttempt = await Attempt.create({
+      studentId: new mongoose.Types.ObjectId(userId),
+      examId: new mongoose.Types.ObjectId(examId),
       answers: attemptAnswers,
-      totalScore,
+      totalScore: Math.round((totalPercent + Number.EPSILON) * 100) / 100,
+      subjectsScore: attemptSubjectsScore,
       submittedAt: new Date(),
     });
 
-    const percentage = exam.totalMarks ? Math.round((totalScore / exam.totalMarks) * 10000) / 100 : 0;
+    // ✅ Ensure Result exists
+    if (!(await Result.findOne({ examId }))) {
+      await Result.create({ examId });
+    }
 
-    // Update achievements (adapt as per your logic)
-    const update: any = {
-      $addToSet: { expertise: exam.categoryId?._id },
-      $inc: { rating: Math.round(percentage) },
-    };
-    if (percentage >= 95) update.$inc = { ...(update.$inc || {}), medals: 1 };
+    // ✅ Update UserAchievement
+    let achievement: any = await UserAchievement.findOne({ user: userId });
 
-    const achievement = await UserAchievement.findOneAndUpdate(
-      { user: userId },
-      update,
-      { new: true, upsert: true }
-    ).populate("expertise");
+    if (achievement) {
+      achievement.subjectsScore = achievement.subjectsScore || [];
 
-    return NextResponse.json({
-      success: true,
-      data: { attempt, percentage, achievement },
-    }, { status: 200 });
+      for (const s of attemptSubjectsScore) {
+        const existing = achievement.subjectsScore.find(
+          (sub: any) => String(sub.subjectId) === String(s.subjectId)
+        );
+        if (existing) {
+          existing.marks =
+            Math.round(
+              ((existing.marks + s.marks) / 2 + Number.EPSILON) * 100
+            ) / 100;
+        } else {
+          achievement.subjectsScore.push(s);
+        }
+      }
 
+      if (exam.categoryId) {
+        achievement.expertise = achievement.expertise || [];
+        if (
+          !achievement.expertise.some(
+            (e: any) => String(e) === String(exam.categoryId)
+          )
+        ) {
+          achievement.expertise.push(exam.categoryId);
+        }
+      }
+
+      achievement.rating = (achievement.rating || 0) + Math.round(totalPercent);
+      if (totalPercent >= 95) {
+        achievement.medals = (achievement.medals || 0) + 1;
+      }
+
+      await achievement.save();
+    } else {
+      achievement = await UserAchievement.create({
+        user: userId,
+        expertise: exam.categoryId ? [exam.categoryId] : [],
+        subjectsScore: attemptSubjectsScore,
+        rating: Math.round(totalPercent),
+        medals: totalPercent >= 95 ? 1 : 0,
+      });
+    }
+
+    return NextResponse.json(
+      { success: true, data: { attempt: savedAttempt, achievement } },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("submitExam error:", error);
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: error.message || "Internal server error" },
+      { status: 500 }
+    );
   }
 }

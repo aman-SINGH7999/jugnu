@@ -1,7 +1,6 @@
 "use client";
 
 import Header from "@/components/tests/Header";
-import PracticeTests from "@/components/tests/PracticeTests";
 import TestCardNew from "@/components/tests/TestCardNew";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -142,8 +141,6 @@ export default function Page() {
             )}
           </div>
 
-          {/* PracticeTests */}
-          <PracticeTests />
         </div>
       </div>
     </div>

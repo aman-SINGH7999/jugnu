@@ -1,43 +1,70 @@
-// components/ScheduledTests.tsx
-import { User } from 'lucide-react';
-import Link from 'next/link';
+"use client";
 
-const ScheduledTests = () => {
-  const tests = [
-    { subject: "Physics", title: "Light", duration: "1 hr", status: "done" },
-    { subject: "Physics", title: "Kinematics", duration: "30 min", status: "pending" },
-    { subject: "Chemistry", title: "Solid State", duration: "1 hr 30 min", status: "pending" },
-    { subject: "Mathematics", title: "Algebra", duration: "30 min", status: "done" },
-    { subject: "Chemistry", title: "Solid State", duration: "45 min", status: "pending" },
-    { subject: "Mathematics", title: "Algebra", duration: "1 hr", status: "pending" },
+import React from "react";
+import { Clock, HelpCircle, Tag, Calendar, BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-  ];
+interface PracticeCardProps {
+  subject: string;
+  description: string;
+  noOfQuestions: number;
+  duration: number; // in minutes
+  category?: string;
+}
+
+const PracticeCard: React.FC<PracticeCardProps> = ({
+  subject,
+  description,
+  noOfQuestions,
+  duration,
+  category,
+}) => {
+
+  const router = useRouter();
 
   return (
-    <div className="py-14">
-      <h2 className="text-3xl font-bold text-gray-600 mb-6 border-b border-gray-200">Practice Tests</h2>
-      <div className="space-y-3 grid sm:grid-cols-2 gap-5">
-        {tests.map((test, index) => (
-          <div key={index} className="bg-violet-50 rounded-xl shadow-sm border border-gray-200 p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <User className="w-6 h-6 text-gray-500" />
-              <div>
-                <h3 className="font-medium text-gray-800 mb-1"><span className='text-gray-600 font-semibold mr-2'>{test.subject}</span>{test.title}</h3>
-                <p className="text-sm text-gray-500"><span className=' mr-1'>Duration:</span>{test.duration}</p>
-              </div>
-            </div>
-            {
-              test.status === 'done' 
-              ? <div className='px-3 py-1 bg-green-700 text-white text-xs rounded-lg'>Completed</div>
-              : <Link href={'#'} className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-lg hover:bg-blue-200 transition-colors">
-                  Start
-                </Link>
-            }
-          </div>
-        ))}
+    <div
+      className="relative bg-gradient-to-br from-green-50 via-white to-green-50 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between border border-green-100 hover:border-green-400 hover:-translate-y-0"
+    >
+      <BookOpen className="w-10 h-10 my-2 text-green-600" />
+      {/* Title */}
+      <h2 className="text-2xl font-bold text-green-800 mb-2">{subject}</h2>
+
+      {/* Description */}
+      {description && (
+        <p className="text-gray-600 text-sm mb-4 leading-relaxed">
+          {description}
+        </p>
+      )}
+
+      {/* Info */}
+      <div className="grid grid-cols-2 gap-3 text-sm text-gray-700 mb-4">
+        <div className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-green-600" />
+          <span>{noOfQuestions} Questions</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Clock className="w-4 h-4 text-green-600" />
+          <span>{duration} min</span>
+        </div>
       </div>
+
+      {/* Extra info */}
+      <div className="flex justify-between items-center text-xs text-gray-500 border-t pt-3">
+        {category && (
+          <div className="flex items-center gap-1">
+            <Tag className="w-3 h-3 text-green-500" />
+            <span>{category}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Action button */}
+      <button onClick={()=> router.push(`/quiz/${subject.toLowerCase()}?desc=${description}&n=${noOfQuestions}`)} className="mt-5 w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-2.5 rounded-xl font-medium hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg">
+        Start Practice
+      </button>
     </div>
   );
 };
 
-export default ScheduledTests;
+export default PracticeCard;

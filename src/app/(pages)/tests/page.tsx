@@ -1,7 +1,6 @@
 "use client";
 
 import Header from "@/components/tests/Header";
-import PracticeTests from "@/components/tests/PracticeTests";
 import TestCardNew from "@/components/tests/TestCardNew";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -24,6 +23,7 @@ interface Exam {
   questionIds: string[];
   createdAt: string;
   scheduledDate: string; // exam ki date
+  attempted: boolean; // ✅ add this
 }
 
 export default function Page() {
@@ -156,8 +156,6 @@ export default function Page() {
             )}
           </div>
 
-          {/* PracticeTests */}
-          <PracticeTests />
         </div>
       </div>
     </div>

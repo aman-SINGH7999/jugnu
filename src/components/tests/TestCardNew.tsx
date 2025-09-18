@@ -20,6 +20,7 @@ interface TestCardProps {
     questionIds: string[];
     scheduledDate?: string;
     createdAt: string;
+    attempted?: boolean; // ✅ add this
   }
   bgColor?: string;
   onActionClick: () => void;
@@ -149,20 +150,27 @@ export default function TestCard({ exam, bgColor, onActionClick }: TestCardProps
 
         {/* Button */}
         <button
-          onClick={onActionClick}
-          disabled={!isOngoing}
-          className={`w-full py-3 mt-3 rounded-lg text-sm font-semibold transition-all ${
-            isUpcoming
-              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            onClick={onActionClick}
+            disabled={!isOngoing || testData.attempted} // ✅ add attempted
+            className={`w-full py-3 mt-3 rounded-lg text-sm font-semibold transition-all ${
+              testData.attempted
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : isUpcoming
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : isOngoing
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-md'
+                : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {testData.attempted
+              ? 'Already Attempted'
+              : isUpcoming
+              ? 'Coming Soon'
               : isOngoing
-              ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-md'
-              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          {isUpcoming && 'Coming Soon'}
-          {isOngoing && 'Start Test'}
-          {isExpired && 'Expired'}
-        </button>
+              ? 'Start Test'
+              : 'Expired'}
+          </button>
+
       </div>
     </div>
   )

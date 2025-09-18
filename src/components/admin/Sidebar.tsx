@@ -35,9 +35,10 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }: SidebarProps) => {
   const menuItems = [
     { name: "Profile", icon: User, href: "/admin/profile" },
     { name: "Subjects", icon: BookCopy, href: "/admin/subjects" },
+    { name: "Questions", icon: HelpCircle, href: "/admin/questions" },
     { name: "Category", icon: Layers, href: "/admin/category" },
     { name: "Exams", icon: FileText, href: "/admin/exams" },
-    { name: "Questions", icon: HelpCircle, href: "/admin/questions" },
+    { name: "Results", icon: FileText, href: "/admin/results" },
   ];
 
   // mobile only
