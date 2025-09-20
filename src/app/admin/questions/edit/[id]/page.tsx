@@ -1,4 +1,4 @@
-// app/admin/questions/[id]/page.tsx
+// app/admin/questions/edit/[id]/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -16,13 +16,12 @@ const QuestionForm = dynamic(
   }
 );
 
-interface Props {
-   params: {
-    id: string; // dynamic route param
-  };
+interface EditQuestionPageProps {
+  params: { id: string }; // simple object
 }
 
-export default function EditQuestionPage({ params }: Props) {
+
+export default function EditQuestionPage({ params }: EditQuestionPageProps) {
   const { id } = params;
   const router = useRouter();
 
