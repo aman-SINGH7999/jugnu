@@ -1,12 +1,13 @@
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const authOptions = {
+// 1️⃣ Auth options
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -31,12 +32,26 @@ export const authOptions = {
       return session;
     },
   },
+  events: {
+    async signIn(message) {
+      console.log("NEXTAUTH signIn event:", message);
+    },
+    async createUser(user) {
+      console.log("NEXTAUTH createUser event:", user);
+    },
+  },
 };
 
-// ⚡ App Router-compatible handler
+// 2️⃣ App Router-compatible handler
 const handler = async (req: NextRequest) => {
-  // ⚠️ NextAuth expects Node req/res; we can cast
-  return await NextAuth(req as any, {} as any, authOptions);
+  // NextAuth expects Node req/res, so use NextResponse
+  const url = req.url;
+  const { pathname, search } = new URL(url);
+  const res = NextResponse.next();
+
+  // ⚠️ This uses the official App Router workaround
+  return NextAuth(req as any, res as any, authOptions);
 };
 
+// 3️⃣ Export GET and POST explicitly for App Router
 export { handler as GET, handler as POST };
