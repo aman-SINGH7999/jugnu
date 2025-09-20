@@ -33,7 +33,7 @@ interface ISubjectScore {
 }
 
 
-export default function UserResultPage({ params }: { params: { testId: string } }) {
+export default function UserResultPage({ params }: any) {
   const [isLogin, setIsLogin] = useState(true); // 👈 toggle this for global/user view
   const [answers, setAnswers] = useState<IAnswer[] | []>([]);
   const [subjectsScore, setSubjectsScore] = useState<ISubjectScore[] | []>([]);
