@@ -98,7 +98,7 @@ export default function page() {
 
 
   const fetchUserData = async () => {
-    if (!user?._id && !user?.id) return; // ✅ user null hua to return kar do
+    if (!user?.id) return; // ✅ user null hua to return kar do
 
     try {
       const { data } = await axios.get(`/api/achievements/${user.id}`);
@@ -112,7 +112,7 @@ export default function page() {
   };
 
   const fetchPublishedResult = async ()=>{
-    if (!user?._id && !user?.id) return; // ✅ user null hua to return kar do
+    if (!user?.id) return; // ✅ user null hua to return kar do
 
     try {
       const { data } = await axios.get(`/api/publishedResult/user/${user.id}/all`);
