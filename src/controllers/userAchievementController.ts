@@ -5,10 +5,10 @@ import { UserAchievement, Attempt, Result } from "@/models";
 export async function getAchievementByUser(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await dbConnect();
-    const userId = params.id; // now safe
+    const studentId = params.id; // now safe
 
     // 🔹 1. Fetch user achievement
-    const achievement = await UserAchievement.findOne({ user: userId })
+    const achievement = await UserAchievement.findOne({ user: studentId })
       .populate("expertise", "name")
       .populate("subjectsScore.subjectId", "name");
 
@@ -27,7 +27,7 @@ export async function getAchievementByUser(req: NextRequest, { params }: { param
     }).lean();
 
     const examIds = results.map(r => String(r.examId));
-    const studentId = params.id;
+    
     // 🔹 3. Fetch all attempts by the userId and examId
     const unPublishedAttempts = await Attempt.find({
       studentId: studentId,

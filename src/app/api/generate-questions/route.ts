@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    console.log("question data: ", data)
+    // console.log("question data: ", data)
     let parsed = [];
     try {
       // ✅ JSON ko clean karke parse karo

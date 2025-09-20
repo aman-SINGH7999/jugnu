@@ -62,6 +62,12 @@ useEffect(() => {
     }
   };
 
+    // 🔹 Email se initials nikaalne ka helper
+  const getInitials = (email?: string) => {
+    if (!email) return "U"; // Default "U" for Unknown
+    return email.slice(0, 2).toUpperCase();
+  };
+
   return (
     <>
       <aside
@@ -113,13 +119,26 @@ useEffect(() => {
         {/* User Profile */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3">
-            <Image
+            {/* <Image
               src={user?.image? user.image :"/user-icon.jpeg"}
               alt="User"
               width={32}
               height={32}
               className="w-8 h-8 rounded-full object-cover"
-            />
+            /> */}
+            {user?.image ? (
+              <Image
+                src={user.image}
+                alt="User"
+                width={40}
+                height={40}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-400 text-white font-semibold">
+                {getInitials(user?.email)}
+              </div>
+            )}
             <span className="text-sm font-medium text-gray-700">{user?.name ? user?.name : "User"}</span>
           </div>
         </div>

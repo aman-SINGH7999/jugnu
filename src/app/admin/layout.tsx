@@ -11,6 +11,10 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  useEffect(()=>{
+    if(user?.role !== 'teacher' && user?.role !== 'admin') router.push('/');
+  },[])
+
   useEffect(() => {
     if (!loading) {
       // not logged in -> send to login

@@ -93,23 +93,23 @@ export default function TestCard({ exam, bgColor, onActionClick }: TestCardProps
 
   return (
     <div
-      className="group relative max-w-md w-full rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden transform hover:-translate-y-1 bg-white"
+      className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50 p-6 rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer flex flex-col justify-between border border-blue-100 hover:border-blue-400 hover:-translate-y-0"
       style={{ backgroundColor: bgColor || 'white' }}
     >
       {/* Content */}
-      <div className="relative z-10 p-6 flex flex-col gap-4">
+      <div className="relative z-10 px-6 py-3 flex flex-col gap-4">
         {/* Title + Category */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+        <div className='border-b border-blue-500'>
+          <h2 className="text-2xl font-bold text-blue-800 group-hover:text-blue-600 transition-colors">
             {testData.title}
           </h2>
-          <p className="text-sm font-medium text-gray-500">{testData.categoryId.name}</p>
+          <p className="text-sm font-medium text-blue-800">{testData.categoryId.name}</p>
         </div>
 
         {/* Description */}
-        {testData.description && (
+        {/* {testData.description && (
           <p className="text-gray-600 text-sm line-clamp-2">{testData.description}</p>
-        )}
+        )} */}
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-3 mt-2">
@@ -117,16 +117,16 @@ export default function TestCard({ exam, bgColor, onActionClick }: TestCardProps
             <Clock size={16} className="text-blue-600" />
             <span className="text-sm font-medium text-gray-700">{testData.duration} mins</span>
           </div>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-red-50">
-            <Award size={16} className="text-red-600" />
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50">
+            <Award size={16} className="text-blue-600" />
             <span className="text-sm font-medium text-gray-700">{testData.totalMarks} pts</span>
           </div>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-purple-50">
-            <Users size={16} className="text-purple-600" />
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50">
+            <Users size={16} className="text-blue-600" />
             <span className="text-sm font-medium text-gray-700">{testData.questionIds.length} Qs</span>
           </div>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-50">
-            <Target size={16} className="text-emerald-600" />
+          <div className="flex items-center gap-2 p-2 rounded-lg bg-blue-50">
+            <Target size={16} className="text-blue-600" />
             <span className="text-sm font-medium text-gray-700">
               +{testData.marksParQue} / -{Math.abs(testData.negative)}
             </span>
@@ -135,8 +135,8 @@ export default function TestCard({ exam, bgColor, onActionClick }: TestCardProps
 
         {/* Date / Countdown */}
         {testData.scheduledDate && (
-          <div className="flex items-center gap-2 text-gray-400 text-xs mt-2">
-            <Calendar size={16} />
+          <div className="flex items-center gap-2 text-gray-500 text-xs mt-2">
+            <Calendar size={16} className='text-blue-500' />
             {isUpcoming && (
               <>
                 Starts at {formatDateTime(testData.scheduledDate)}
@@ -158,7 +158,7 @@ export default function TestCard({ exam, bgColor, onActionClick }: TestCardProps
                 : isUpcoming
                 ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                 : isOngoing
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-md'
+                ? 'bg-gradient-to-r from-blue-400 to-blue-500 text-white hover:from-blue-700 hover:to-blue-800 hover:shadow-md'
                 : 'bg-gray-200 text-gray-500 cursor-not-allowed'
             }`}
           >

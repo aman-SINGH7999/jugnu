@@ -13,10 +13,15 @@ interface QuestionProps {
 export default function Question({ q, index, selected, onSelect, disabled }: QuestionProps) {
   return (
     <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-      <h3 className="font-semibold mb-3">{index + 1}. {q.question}</h3>
+      <h3 className="font-semibold mb-3">
+        {index + 1}. {q.question}
+      </h3>
       <div className="space-y-2">
         {q.options.map((opt) => (
-          <label key={opt} className="flex items-center gap-2 cursor-pointer">
+          <label
+            key={opt}
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               type="radio"
               name={`q-${index}`}

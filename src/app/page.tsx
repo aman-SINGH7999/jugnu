@@ -5,7 +5,13 @@ import Features2 from "@/components/home/Features2";
 import Testimonials from "@/components/home/Testimonials";
 import Image from "next/image";
 
+
+
 export default function HomePage() {
+  
+
+
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Navbar */}

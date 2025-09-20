@@ -48,7 +48,7 @@ export default function Testimonials() {
               {/* User Info */}
               <div className="flex items-center gap-4 mt-4">
                 {/* Avatar Placeholder */}
-                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-white font-bold text-lg select-none">
+                <div className="w-12 h-12 rounded-full bg-blue-400 flex items-center justify-center text-white font-bold text-lg select-none">
                   {t.name.split(" ").map(n => n[0]).join("")}
                 </div>
                 <div className="text-left">
