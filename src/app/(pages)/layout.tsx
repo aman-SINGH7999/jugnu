@@ -11,9 +11,9 @@ export default function PagesLayout({ children }: { children: React.ReactNode })
   const { user} = useAuth();
   const router = useRouter();
 
-  useEffect(()=>{
-    if(!user) router.push('/');
-  },[])
+  // useEffect(()=>{
+  //   if(!user) router.push('/');
+  // },[])
 
   return (
     <div className="flex overflow-x-hidden">

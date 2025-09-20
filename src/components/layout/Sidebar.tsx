@@ -53,9 +53,11 @@ useEffect(() => {
 }, [isSidebarOpen, setIsSidebarOpen]);
 
    const handleLogout = async () => {
+    console.log("logout")
     try {
-    await logout(); // custom logout
-      signOut({ callbackUrl: "/" }); // NextAuth logout
+      await logout(); // custom logout
+      await signOut({ callbackUrl: "/" }); // NextAuth logout
+       console.log("logout successfully")
       router.push("/"); // apna redirect
     } catch (err) {
       console.error("Logout failed:", err);

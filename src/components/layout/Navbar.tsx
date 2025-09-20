@@ -87,7 +87,7 @@ export default function Navbar() {
             <div className="absolute right-0 mt-2 w-72 bg-white/90 backdrop-blur-lg border border-white/10 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-200">
               <div className="max-h-64 overflow-y-auto">
                 {exams.length === 0 ? (
-                  <p className="p-3 text-sm text-gray-300 text-center">No upcoming exams</p>
+                  <p className="p-3 text-sm text-yellow-600 text-center">No upcoming exams</p>
                 ) : (
                   exams.map((exam) => (
                     <div key={exam._id} className="p-3 border-b border-gray/10 last:border-none hover:bg-white/10">
