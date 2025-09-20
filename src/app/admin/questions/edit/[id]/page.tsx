@@ -16,11 +16,9 @@ const QuestionForm = dynamic(
   }
 );
 
-interface Props {
-  params: { id: string };
-}
 
-export default function EditQuestionPage({ params }: Props) {
+
+export default function EditQuestionPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const router = useRouter();
 
