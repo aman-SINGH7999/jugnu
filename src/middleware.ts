@@ -9,8 +9,8 @@ const protectedRoutes: Record<string, ("admin" | "teacher" | "student")[]> = {
   "/api/exams/create": ["admin", "teacher"],
   "/api/exams/update": ["admin", "teacher"],
   "/api/exams/delete": ["admin"],
-  "/api/attempts/create": ["student"],
-  "/api/attempts/submit": ["student"],
+  // "/api/attempts/create": ["student"],
+  // "/api/attempts/submit": ["student"],
   "/dashboard/admin": ["admin"],
   "/dashboard/teacher": ["teacher", "admin"],
 
