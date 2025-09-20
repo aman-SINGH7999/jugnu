@@ -31,18 +31,12 @@ export const authOptions = {
       return session;
     },
   },
-  events: {
-    async signIn(message) {
-      console.log("NEXTAUTH signIn event:", message);
-    },
-    async createUser(user) {
-      console.log("NEXTAUTH createUser event:", user);
-    },
-  },
 };
 
-// ⚡ App Router compatible handler
-const handler = (req: NextRequest) => NextAuth(req, authOptions);
+// ⚡ App Router-compatible handler
+const handler = async (req: NextRequest) => {
+  // ⚠️ NextAuth expects Node req/res; we can cast
+  return await NextAuth(req as any, {} as any, authOptions);
+};
 
-// ✅ Export both GET and POST
 export { handler as GET, handler as POST };
