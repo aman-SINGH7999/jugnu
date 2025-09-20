@@ -4,7 +4,8 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { unstable_getServerSession } from "next-auth/next";
 
 // 1️⃣ Auth options
 export const authOptions: AuthOptions = {
@@ -42,16 +43,12 @@ export const authOptions: AuthOptions = {
   },
 };
 
-// 2️⃣ App Router-compatible handler
+// 2️⃣ App Router handler
 const handler = async (req: NextRequest) => {
-  // NextAuth expects Node req/res, so use NextResponse
-  const url = req.url;
-  const { pathname, search } = new URL(url);
-  const res = NextResponse.next();
-
-  // ⚠️ This uses the official App Router workaround
+  // App Router me NextAuth ko Node-style req/res me wrap karte hain
+  const res = new Response();
   return NextAuth(req as any, res as any, authOptions);
 };
 
-// 3️⃣ Export GET and POST explicitly for App Router
+// 3️⃣ Export GET and POST explicitly
 export { handler as GET, handler as POST };
