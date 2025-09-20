@@ -4,8 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
-import { NextRequest } from "next/server";
-import { unstable_getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
 
 // 1️⃣ Auth options
 export const authOptions: AuthOptions = {
@@ -43,12 +42,10 @@ export const authOptions: AuthOptions = {
   },
 };
 
-// 2️⃣ App Router handler
-const handler = async (req: NextRequest) => {
-  // App Router me NextAuth ko Node-style req/res me wrap karte hain
-  const res = new Response();
-  return NextAuth(req as any, res as any, authOptions);
+// 2️⃣ App Router handler wrapper
+const handler = (req: NextRequest) => {
+  return NextAuth(req as unknown as Request, new Response(), authOptions);
 };
 
-// 3️⃣ Export GET and POST explicitly
+// 3️⃣ Explicitly export GET and POST for App Router
 export { handler as GET, handler as POST };
