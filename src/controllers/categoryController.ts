@@ -44,7 +44,7 @@ export async function getCategories(req: NextRequest) {
 // ✅ Get Category by ID
 export async function getCategoryById(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     await dbConnect();
@@ -70,7 +70,7 @@ export async function getCategoryById(
 // ✅ Update Category
 export async function updateCategory(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     await dbConnect();
@@ -104,7 +104,7 @@ export async function updateCategory(
 // ✅ Delete Category
 export async function deleteCategory(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     await dbConnect();

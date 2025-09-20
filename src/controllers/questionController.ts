@@ -80,7 +80,7 @@ export async function getQuestions(req: NextRequest) {
 // ✅ Get a Single Question by ID
 export async function getQuestionById(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     await dbConnect();
@@ -106,7 +106,7 @@ export async function getQuestionById(
 // ✅ Update Question
 export async function updateQuestion(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   
   try {
@@ -145,7 +145,7 @@ export async function updateQuestion(
 // ✅ Delete Question
 export async function deleteQuestion(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     await dbConnect();

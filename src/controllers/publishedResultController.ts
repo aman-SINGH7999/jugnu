@@ -16,7 +16,7 @@ async function isResultPublished(examId: string) {
  * 1. Exam ka result chahiye examId ke basis par
  *    - Question + Correct Answers
  */
-export async function getExamResultByExam(req: NextRequest, { params }: { params: { examId: string } }) {
+export async function getExamResultByExam(req: NextRequest, { params }: any) {
   // console.log("Exam id -----------------------------------------------------------------------------------")
   try {
     await dbConnect();
@@ -50,7 +50,7 @@ export async function getExamResultByExam(req: NextRequest, { params }: { params
  * 2. Exam ka result chahiye user ke respect me
  *    - Question + Correct Answer + User Answer
  */
-export async function getExamResultByUser(req: NextRequest, { params }: { params: { examId: string; userId: string } }) {
+export async function getExamResultByUser(req: NextRequest, { params }:any) {
 
   // console.log("Exam id + user id dono chala hai**************************************************************")
   try {

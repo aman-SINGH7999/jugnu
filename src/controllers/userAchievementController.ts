@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/dbConnect";
 import { UserAchievement, Attempt, Result } from "@/models";
 
-export async function getAchievementByUser(req: NextRequest, { params }: { params: { id: string } }) {
+export async function getAchievementByUser(req: NextRequest, { params }:any) {
   try {
     await dbConnect();
     const studentId = params.id; // now safe
