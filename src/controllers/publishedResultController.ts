@@ -138,7 +138,7 @@ export async function getAllPublishedExams() {
  */
 export async function getUserExamsWithScores(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: any
 ) {
     // console.log("userId--------------", params.userId)
   try {
