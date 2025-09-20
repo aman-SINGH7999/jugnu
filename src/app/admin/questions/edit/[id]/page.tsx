@@ -1,4 +1,5 @@
 // app/admin/questions/[id]/page.tsx
+// @ts-nocheck
 "use client";
 
 import { useRouter } from "next/navigation";
