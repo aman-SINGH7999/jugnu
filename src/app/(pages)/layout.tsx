@@ -2,10 +2,18 @@
 
 import Footer from '@/components/layout/Footer';
 import Sidebar from '@/components/layout/Sidebar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/lib/useAuth';
+import { useRouter } from 'next/navigation';
 
 export default function PagesLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { user} = useAuth();
+  const router = useRouter();
+
+  useEffect(()=>{
+    if(!user) router.push('/');
+  },[])
 
   return (
     <div className="flex overflow-x-hidden">
