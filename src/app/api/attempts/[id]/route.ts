@@ -1,5 +1,9 @@
 // import { getAttemptById } from "@/controllers/attemptController";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request, context: any) {
-  return "getAttemptById(req as any, context);"
+  return NextResponse.json(
+        { success: false, message: "hi" },
+        { status: 500 }
+      );
 }
