@@ -111,7 +111,7 @@ useEffect(() => {
           {/* Logout Button */}
           <button
             onClick={handleLogout }
-            className="flex w-full items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
+            className="flex w-full cursor-pointer items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-all duration-200"
           >
             <LogOut size={20} />
             <span>Logout</span>

@@ -5,6 +5,7 @@ import TestCardNew from "@/components/tests/TestCardNew";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { CardLoader } from "@/components/layout/Loader";
 
 interface Category {
   _id: string;
@@ -136,7 +137,15 @@ export default function Page() {
           {/* Exam grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
             {loading ? (
-              <p className="col-span-full text-center text-gray-500">Loading...</p>
+              <>
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+              </>
+              
             ) : filteredExams.length > 0 ? (
               filteredExams.map((exam) => (
                 <TestCardNew

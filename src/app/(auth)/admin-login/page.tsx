@@ -14,9 +14,17 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth()
 
-  useEffect(()=>{
-    if(user) router.push('/admin/exams');
-  })
+  if(user){
+    console.log("user: ", user)
+    if (user.role === "admin") {
+      router.push("/admin/exams");
+    } else if (user.role === "teacher") {
+      router.push("/admin/exams");
+    } else {
+      router.push("/");
+    }
+  }
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

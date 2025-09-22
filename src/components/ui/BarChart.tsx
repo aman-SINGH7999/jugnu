@@ -24,7 +24,7 @@ export default function BarChartComponent({data=[] }: BarChartComponentProp) {
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis dataKey="subjectId.name" />
           <YAxis />
-          <Tooltip />
+          <Tooltip formatter={(value) => Math.round(Number(value))} />
           <Legend />
           <Bar dataKey="marks" fill="#8884d8" radius={[1, 1, 0, 0]} barSize={60} />
         </BarChart>

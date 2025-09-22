@@ -7,6 +7,7 @@ import { Bell } from 'lucide-react';
 import Avatar from "../ui/Avatar";
 import { usePathname } from "next/navigation";
 import axios from "axios";
+import { useAuth } from "@/lib/useAuth";
 
 
 interface Exam {
@@ -26,10 +27,10 @@ interface Exam {
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [exams, setExams] = useState<Exam[]>([]);
   const pathname = usePathname();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchExams = async () => {
@@ -102,7 +103,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {isLogin ? (
+          {user ? (
             <Link href={'#'}>
               <Avatar src="/user-icon.jpeg" size="sm" />
             </Link>

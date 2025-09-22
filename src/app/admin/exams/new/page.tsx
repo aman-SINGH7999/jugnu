@@ -155,7 +155,7 @@ export default function NewExamPage() {
               className="border px-3 py-2 rounded-lg"
             >
               <option value="">Negative Marks</option>
-              {[-0.25, -0.5, -1, -2, -3].map((n) => (
+              {[0,-0.25, -0.5, -1, -2, -3].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>

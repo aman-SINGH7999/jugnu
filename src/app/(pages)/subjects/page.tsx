@@ -25,7 +25,7 @@ const subjects = [
 ];
 
 export default function Page() {
-  const [active, setActive] = useState("JEE");
+  const [active, setActive] = useState("ALL");
 
   // Get active course subjects
   const activeCourse = courses.find(c => c.course === active);

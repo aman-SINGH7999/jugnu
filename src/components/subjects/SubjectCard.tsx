@@ -29,7 +29,7 @@ export default function SubjectCard({subjectName}:SubjectProp ) {
         </div>
         <div className='text-xl text-gray-600'>Learn Sharper</div>
         <div className='text-3xl font-bold text-gray-600 text-shadow-[0_2px_2px_rgba(0,0,0,0.7)]'>{subjectName}</div>
-        <button className='py-2 px-5 outline-1 text-gray-800 z-10 bg-green-400 rounded-md'>Enroll Now</button>
+        <button className='py-2 px-5 outline-1 text-white text-lg z-10 bg-green-400 rounded-md'>Explore Now</button>
 
         <div className='absolute bg-blue-300/30 h-32 w-52 rotate-45 -top-25 left-0'></div>
         <div className='absolute bg-green-300/30 h-20 w-52 rotate-45 top-0 -left-35'></div>

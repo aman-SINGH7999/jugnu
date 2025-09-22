@@ -7,6 +7,8 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 import { useAuth } from '@/lib/useAuth';
 import { useRouter } from 'next/navigation';
+import { RippleLoader, SpinnerLoader, PulseDotsLoader, BouncingDotsLoader, ProgressLoader, SkeletonLoader, CardLoader, OverlayLoader, ButtonWithLoader, TableRowLoader   } from "@/components/layout/Loader";
+
 
 
 // Subject & Course Data
@@ -111,6 +113,7 @@ export default function page() {
     }
   };
 
+ 
   const fetchPublishedResult = async ()=>{
     if (!user?.id) return; // ✅ user null hua to return kar do
 
@@ -157,22 +160,48 @@ useEffect(() => {
           </div>
 
           {/* Graphical stats */}
-          <div className='flex flex-col md:flex-row md:items-center gap-6 md:p-6 rounded-xl shadow-md'>
-            <LineChartComponent data={userAchievements?.attempts}  />
-            <BarChartComponent data={userAchievements?.subjectsScore} />
-          </div>
+          
+            
+          {
+            !userAchievements ? 
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+                <SkeletonLoader />
+                <SkeletonLoader />
+              </div>
+            : <div className='flex flex-col md:flex-row md:items-center gap-6 md:p-6 rounded-xl shadow-md'>
+                <LineChartComponent data={userAchievements?.attempts}  />
+                <BarChartComponent data={userAchievements?.subjectsScore} />
+              </div>
+          }
+            
+          
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <StatCard title="Total Tests" value={userAchievements?.expertise ? userAchievements.expertise.length : 0} icon="📝" />
-            <StatCard title="Total Points" value={userAchievements?.rating ? userAchievements.rating : 0} icon="⭐" />
-            <StatCard title="Global Rank" value={`#${userAchievements?.rank ? userAchievements.rank : "N/A"}`} icon="🏆" />
-            <StatCard title="Courses" value={userAchievements?.subjectsScore ? userAchievements.subjectsScore.length : 0} icon="📚" />
+            {
+              userAchievements 
+              ? <>
+                <StatCard title="Total Tests" value={userAchievements?.expertise ? userAchievements.expertise.length : 0} icon="📝" />
+                <StatCard title="Total Points" value={userAchievements?.rating ? Math.round(userAchievements.rating) : 0} icon="⭐" />
+                <StatCard title="Global Rank" value={`#${userAchievements?.rank ? userAchievements.rank : "N/A"}`} icon="🏆" />
+                <StatCard title="Courses" value={userAchievements?.subjectsScore ? userAchievements.subjectsScore.length : 0} icon="📚" />
+              </>
+              : <>
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+                <CardLoader />
+              </>
+            }
+            
           </div>
 
           {/* Recent Tests */}
           <div className="bg-gray-50 p-6 rounded-xl">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">Recent Tests</h3>
+            {
+              publishedResult.length === 0 && <SkeletonLoader />
+            }
             <div className="space-y-4">
               {publishedResult.length > 0 && publishedResult.map((result,i) => (
                 <div
