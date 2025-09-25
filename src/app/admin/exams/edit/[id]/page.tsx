@@ -162,7 +162,7 @@ export default function EditExamPage() {
               onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })}
               className="border px-3 py-2 rounded-lg"
             >
-              {[20, 30, 45, 60, 90, 100, 120, 150, 180].map((d) => (
+              {[20, 30, 45, 60, 90, 100, 120, 150, 180, 720].map((d) => (
                 <option key={d} value={d}>
                   {d} min
                 </option>
