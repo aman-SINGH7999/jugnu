@@ -16,7 +16,7 @@ export async function getUpcomingSoonExams(req: NextRequest) {
 
     // today 04:00 AM
     const today = new Date();
-    today.setHours(4, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     // 3 days later (till end of day)
     const threeDaysLater = new Date(today);
