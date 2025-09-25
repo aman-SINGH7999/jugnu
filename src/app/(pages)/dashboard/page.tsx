@@ -7,7 +7,8 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios';
 import { useAuth } from '@/lib/useAuth';
 import { useRouter } from 'next/navigation';
-import { RippleLoader, SpinnerLoader, PulseDotsLoader, BouncingDotsLoader, ProgressLoader, SkeletonLoader, CardLoader, OverlayLoader, ButtonWithLoader, TableRowLoader   } from "@/components/layout/Loader";
+import {  SkeletonLoader, CardLoader,SpinnerLoader  } from "@/components/layout/Loader";
+import { CirclePlus } from 'lucide-react';
 
 
 
@@ -95,6 +96,9 @@ export default function page() {
   const [loading, setLoading] = useState<boolean>(true); 
   const { user } = useAuth();
   const router = useRouter();
+  const [image, setImage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   console.log("user: ",user)
 
@@ -133,6 +137,34 @@ useEffect(() => {
 }, [user]); // ✅ dependency me user daalna zaroori hai
 
 
+  // Handle upload
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+  if (!selectedFile) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url){
+        setImage(data.url);
+        await axios.put(`api/users/${user.id}`, {image : data.url}, {
+          withCredentials: true,
+        });
+      }else{
+        alert("Image upload failed");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Image upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 md:p-6">
       <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -141,13 +173,32 @@ useEffect(() => {
           {/* Welcome Section */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 p-6 rounded-xl shadow-md">
             <div className='flex flex-col md:flex-row md:items-center gap-6'>
-              <div className='relative w-25 h-25 rounded-md overflow-hidden'>
-                <Image
-                  src={user?.image ? user.image : '/user-icon.jpeg'}
-                  alt="User"
-                  fill
-                />
+              <div className='relative w-25 h-25 rounded-md overflow-hidden group' >
+                {
+                  uploading ? <SpinnerLoader /> :
+                  <>
+                      <Image
+                      src={user?.image || image || '/user-icon.jpeg'}
+                      alt="User"
+                      fill
+                    />
+                    <label htmlFor="profileImage" className='cursor-pointer opacity-0 w-25 h-25 group-hover:opacity-100 transition '>
+                        <CirclePlus size={35} className=' text-black absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' />
+                    </label>
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      id="profileImage"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleUpload}
+                    />
+                  </>
+                }
+                
+                
               </div>
+              
               <div>
                 <div className='text-gray-600 text-4xl font-bold'>{user?.name}</div>
                 <div className='text-gray-600 text-xl font-semibold'>{user?.email}</div>
