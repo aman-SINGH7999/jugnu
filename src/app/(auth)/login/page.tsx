@@ -21,11 +21,11 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const router = useRouter();
-      const { user } = useAuth()
+      const { user, refresh } = useAuth()
     
     useEffect(() => {
       if (user) {
-        router.push('/dashboard');
+        router.push('/tests');
       }
     }, [user, router]);
 
@@ -68,7 +68,10 @@ export default function LoginPage() {
         return;
       }
       console.log("login successfully")
-      router.push("/dashboard");
+      // 🔥 Refresh user after cookie is set
+      router.push("/tests");
+      await refresh();
+      
     } catch (err:any) {
       console.error("Login request failed:", err);
       setErrorMsg("Something went wrong. Try again.");
