@@ -23,9 +23,12 @@ export default function LoginPage() {
     const router = useRouter();
       const { user } = useAuth()
     
-      useEffect(()=>{
-        if(user) router.push('/dashboard');
-      })
+    useEffect(() => {
+      if (user) {
+        router.push('/dashboard');
+      }
+    }, [user, router]);
+
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
